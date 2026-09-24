@@ -65,6 +65,16 @@
   padding: 0 1.5rem;
 }
 
+.page-rt-banner {
+  margin-bottom: 0.75rem;
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fcd34d;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+}
+
 .page-error {
   margin-top: 0.75rem;
   background: var(--status-cancelled-bg);

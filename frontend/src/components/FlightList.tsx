@@ -1,7 +1,6 @@
-import { MouseEvent, useState } from 'react';
+import { useState } from 'react';
 import { FlightDto } from '@shared/dto';
 import { FlightStatus } from '@shared/enums';
-import { updateFlightStatus } from '../api/flights.api';
 import './FlightList.css';
 
 const STATUS_LABELS: Record<FlightStatus, string> = {
@@ -18,13 +17,6 @@ const STATUS_ICONS: Record<FlightStatus, string> = {
   [FlightStatus.SOLD_OUT]: '⊘',
 };
 
-const STATUS_CYCLE: FlightStatus[] = [
-  FlightStatus.SCHEDULED,
-  FlightStatus.DELAYED,
-  FlightStatus.CANCELLED,
-  FlightStatus.SOLD_OUT,
-];
-
 function airlineInitials(airline: string): string {
   return airline
     .split(' ')
@@ -37,9 +29,10 @@ function airlineInitials(airline: string): string {
 
 interface FlightListProps {
   flights: FlightDto[];
+  onDemoStatusChange?: (flight: FlightDto) => void;
 }
 
-export function FlightList({ flights }: FlightListProps) {
+export function FlightList({ flights, onDemoStatusChange }: FlightListProps) {
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
 
   if (flights.length === 0) {
@@ -52,13 +45,6 @@ export function FlightList({ flights }: FlightListProps) {
 
   function toggleSelected(flightId: string) {
     setSelectedFlightId((current) => (current === flightId ? null : flightId));
-  }
-
-  async function handleDemoStatusChange(event: MouseEvent, flight: FlightDto) {
-    event.stopPropagation();
-    const nextStatus =
-      STATUS_CYCLE[(STATUS_CYCLE.indexOf(flight.status) + 1) % STATUS_CYCLE.length];
-    await updateFlightStatus(flight.id, nextStatus);
   }
 
   return (
@@ -132,12 +118,15 @@ export function FlightList({ flights }: FlightListProps) {
                 </div>
               </div>
 
-              {isSelected && (
+              {isSelected && onDemoStatusChange && (
                 <div className="flight-card-footer">
                   <span className="flight-card-footer-label">Vuelo seleccionado</span>
                   <button
                     className="flight-demo-button"
-                    onClick={(e) => handleDemoStatusChange(e, flight)}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onDemoStatusChange(flight);
+                    }}
                     title="Control de demo/QA: simula un cambio de estado en tiempo real"
                   >
                     cambiar estado ↻
