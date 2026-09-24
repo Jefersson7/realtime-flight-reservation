@@ -30,9 +30,12 @@ function airlineInitials(airline: string): string {
 interface FlightListProps {
   flights: FlightDto[];
   onDemoStatusChange?: (flight: FlightDto) => void;
+  onChooseSeats?: (flight: FlightDto) => void;
 }
 
-export function FlightList({ flights, onDemoStatusChange }: FlightListProps) {
+const UNAVAILABLE_STATUSES: FlightStatus[] = [FlightStatus.CANCELLED, FlightStatus.SOLD_OUT];
+
+export function FlightList({ flights, onDemoStatusChange, onChooseSeats }: FlightListProps) {
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
 
   if (flights.length === 0) {
@@ -118,19 +121,38 @@ export function FlightList({ flights, onDemoStatusChange }: FlightListProps) {
                 </div>
               </div>
 
-              {isSelected && onDemoStatusChange && (
+              {isSelected && (onDemoStatusChange || onChooseSeats) && (
                 <div className="flight-card-footer">
                   <span className="flight-card-footer-label">Vuelo seleccionado</span>
-                  <button
-                    className="flight-demo-button"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onDemoStatusChange(flight);
-                    }}
-                    title="Control de demo/QA: simula un cambio de estado en tiempo real"
-                  >
-                    cambiar estado ↻
-                  </button>
+                  {onChooseSeats && (
+                    <button
+                      className="flight-seats-button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onChooseSeats(flight);
+                      }}
+                      disabled={UNAVAILABLE_STATUSES.includes(flight.status)}
+                      title={
+                        UNAVAILABLE_STATUSES.includes(flight.status)
+                          ? 'Este vuelo no tiene asientos disponibles'
+                          : 'Ver el mapa de asientos y reservar uno temporalmente'
+                      }
+                    >
+                      Elegir asientos →
+                    </button>
+                  )}
+                  {onDemoStatusChange && (
+                    <button
+                      className="flight-demo-button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onDemoStatusChange(flight);
+                      }}
+                      title="Control de demo/QA: simula un cambio de estado en tiempo real"
+                    >
+                      cambiar estado ↻
+                    </button>
+                  )}
                 </div>
               )}
             </div>

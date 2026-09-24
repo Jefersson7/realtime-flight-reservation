@@ -5,6 +5,7 @@ import databaseConfig from './config/database.config';
 import redisConfig from './config/redis.config';
 import { FlightsModule } from './flights/flights.module';
 import { RealtimeModule } from './realtime/realtime.module';
+import { SeatsModule } from './seats/seats.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { RealtimeModule } from './realtime/realtime.module';
     }),
     RealtimeModule,
     FlightsModule,
+    SeatsModule,
   ],
 })
 export class AppModule {}

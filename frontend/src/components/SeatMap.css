@@ -1,0 +1,133 @@
+.seat-map {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem 1.25rem;
+}
+
+.seat-map-fuselage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.seat-map-nose {
+  font-size: 1.5rem;
+  color: var(--color-text-muted);
+  margin-bottom: 0.5rem;
+  transform: rotate(-90deg);
+}
+
+.seat-map-cabin-divider {
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  padding: 0.6rem 0 0.4rem;
+  margin: 0.3rem 0;
+  border-top: 1px dashed var(--color-border);
+}
+
+.seat-map-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.seat-map-row-label {
+  width: 1.4rem;
+  text-align: right;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.seat-map-seats {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.seat-map-aisle {
+  width: 1.1rem;
+}
+
+.seat {
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.seat--available {
+  cursor: pointer;
+}
+
+.seat--available:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-soft);
+  transform: translateY(-1px);
+}
+
+.seat--mine {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  cursor: pointer;
+}
+
+.seat--blocked {
+  background: var(--status-delayed-bg);
+  border-color: var(--status-delayed-fg);
+  color: var(--status-delayed-fg);
+  cursor: not-allowed;
+}
+
+.seat--occupied {
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.seat:disabled {
+  cursor: not-allowed;
+}
+
+.seat--legend {
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+.seat-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.1rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.seat-map-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
