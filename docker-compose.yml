@@ -25,6 +25,9 @@ services:
       dockerfile: backend/Dockerfile
     env_file:
       - backend/.env
+    environment:
+      DB_HOST: postgres
+      REDIS_HOST: redis
     ports:
       - "3000:3000"
     depends_on:
