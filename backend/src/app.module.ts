@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import databaseConfig from './config/database.config';
 import redisConfig from './config/redis.config';
+import { FlightsModule } from './flights/flights.module';
+import { RealtimeModule } from './realtime/realtime.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import redisConfig from './config/redis.config';
       useFactory: (configService: ConfigService) =>
         configService.get<TypeOrmModuleOptions>('database')!,
     }),
+    RealtimeModule,
+    FlightsModule,
   ],
 })
 export class AppModule {}
