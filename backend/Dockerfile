@@ -1,11 +1,11 @@
 FROM node:20-alpine
 
-WORKDIR /app
+WORKDIR /app/backend
 
 COPY backend/package*.json ./
 RUN npm install
 
-COPY shared /shared
+COPY shared /app/shared
 COPY backend .
 RUN npm run build
 

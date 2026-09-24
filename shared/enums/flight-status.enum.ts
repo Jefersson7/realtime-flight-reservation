@@ -1,0 +1,6 @@
+export enum FlightStatus {
+  SCHEDULED = 'SCHEDULED',
+  DELAYED = 'DELAYED',
+  CANCELLED = 'CANCELLED',
+  SOLD_OUT = 'SOLD_OUT',
+}

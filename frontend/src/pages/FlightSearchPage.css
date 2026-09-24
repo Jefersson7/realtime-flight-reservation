@@ -1,0 +1,88 @@
+.page {
+  min-height: 100vh;
+}
+
+.page-header {
+  background: linear-gradient(135deg, #16296b, var(--color-primary));
+  color: white;
+  padding: 2rem 1.5rem 3.5rem;
+}
+
+.page-header-inner {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.page-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  margin-bottom: 0.75rem;
+}
+
+.page-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.6);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(74, 222, 128, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+  }
+}
+
+.page-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.75rem;
+}
+
+.page-subtitle {
+  margin: 0;
+  opacity: 0.85;
+  font-size: 0.95rem;
+}
+
+.page-content {
+  max-width: 960px;
+  margin: -2.5rem auto 3rem;
+  padding: 0 1.5rem;
+}
+
+.page-error {
+  margin-top: 0.75rem;
+  background: var(--status-cancelled-bg);
+  color: var(--status-cancelled-fg);
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.9rem;
+}
+
+.page-loading,
+.page-placeholder {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-muted);
+}
+
+.page-placeholder-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
