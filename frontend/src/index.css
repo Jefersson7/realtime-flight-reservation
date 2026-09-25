@@ -20,6 +20,17 @@
   --status-cancelled-fg: #c0292f;
   --status-sold-out-bg: #f1e9fb;
   --status-sold-out-fg: #6c2bb3;
+
+  /* Seat-occupancy states (dashboard de estado del vuelo). Reusan los
+     mismos pares bg/fg de los estados de vuelo de arriba para no introducir
+     una paleta nueva: disponible=bueno, bloqueado=advertencia (transitorio),
+     ocupado=informativo/neutral (no es un estado negativo). */
+  --seat-available-bg: #e6f4ea;
+  --seat-available-fg: #1e7d32;
+  --seat-blocked-bg: #fff4e0;
+  --seat-blocked-fg: #b3720a;
+  --seat-occupied-bg: #eaf0ff;
+  --seat-occupied-fg: #2154cf;
 }
 
 * {

@@ -217,13 +217,20 @@
   color: var(--color-text-muted);
 }
 
+.flight-card-footer button {
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
 .flight-seats-button {
-  border: none;
+  border: 1px solid var(--color-primary);
   background: var(--color-primary);
   color: white;
   font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.4rem 0.85rem;
+  padding: 0 0.85rem;
   border-radius: var(--radius-md);
   transition: background 0.15s ease;
 }
@@ -234,8 +241,25 @@
 
 .flight-seats-button:disabled {
   background: var(--color-border);
+  border-color: var(--color-border);
   color: var(--color-text-muted);
   cursor: not-allowed;
+}
+
+.flight-dashboard-button {
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0 0.85rem;
+  border-radius: var(--radius-md);
+  transition: background 0.15s ease;
+}
+
+.flight-dashboard-button:hover {
+  background: var(--color-primary);
+  color: white;
 }
 
 .flight-demo-button {
@@ -244,7 +268,7 @@
   color: var(--color-text-muted);
   font-size: 0.8rem;
   font-weight: 600;
-  padding: 0.4rem 0.85rem;
+  padding: 0 0.85rem;
   border-radius: var(--radius-md);
   transition: color 0.15s ease, border-color 0.15s ease;
 }

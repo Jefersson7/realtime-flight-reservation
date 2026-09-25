@@ -49,7 +49,3 @@ npm run dev
 
 - [`docs/architecture.md`](docs/architecture.md) — diseño, ADRs, diagrama de arquitectura, manejo de concurrencia.
 - [`docs/ia.md`](docs/ia.md) — uso transparente de IA durante el desarrollo.
-
-## Estado actual
-
-Scaffold inicial del proyecto (estructura, configuración base de backend/frontend, Docker). Los módulos de dominio (`flights`, `seats`, `bookings`, `realtime`) se implementarán historia de usuario por historia de usuario, cada una en su propia rama.
