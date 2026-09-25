@@ -1,0 +1,15 @@
+# Dependencias, builds y artefactos generados — Claude solo debe leer el código fuente
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+package-lock.json
+
+# Entorno, credenciales y config local
+.env
+.env.local
+*.log
+.DS_Store
+.vscode/
+.idea/
