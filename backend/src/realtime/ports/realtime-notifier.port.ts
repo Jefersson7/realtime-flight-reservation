@@ -1,6 +1,7 @@
 import {
   FlightStatusChangedPayload,
   SeatBlockedPayload,
+  SeatOccupiedPayload,
   SeatReleasedPayload,
 } from '@shared/events';
 
@@ -11,6 +12,7 @@ export interface RealtimeNotifierPort {
   notifyFlightStatusChanged(payload: FlightStatusChangedPayload): void;
   notifySeatBlocked(payload: SeatBlockedPayload): void;
   notifySeatReleased(payload: SeatReleasedPayload): void;
+  notifySeatOccupied(payload: SeatOccupiedPayload): void;
 }
 
 export const REALTIME_NOTIFIER = Symbol('REALTIME_NOTIFIER');

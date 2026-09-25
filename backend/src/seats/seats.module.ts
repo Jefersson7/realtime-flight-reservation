@@ -33,6 +33,6 @@ import { RealtimeModule } from '../realtime/realtime.module';
     { provide: SEAT_REPOSITORY, useClass: TypeOrmSeatRepository },
     { provide: SEAT_LOCK, useClass: RedisSeatLockAdapter },
   ],
-  exports: [BlockSeatUseCase, ReleaseSeatUseCase],
+  exports: [BlockSeatUseCase, ReleaseSeatUseCase, SEAT_REPOSITORY, SEAT_LOCK],
 })
 export class SeatsModule {}

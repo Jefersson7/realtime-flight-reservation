@@ -30,6 +30,7 @@ describe('UpdateFlightStatusUseCase', () => {
       notifyFlightStatusChanged: jest.fn(),
       notifySeatBlocked: jest.fn(),
       notifySeatReleased: jest.fn(),
+      notifySeatOccupied: jest.fn(),
     };
     useCase = new UpdateFlightStatusUseCase(repository, notifier);
   });

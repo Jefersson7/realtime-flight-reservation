@@ -1,49 +1,20 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { FlightDto, SeatDto } from '@shared/dto';
 import { SeatStatus } from '@shared/enums';
 import { getClientId } from '../lib/clientIdentity';
 import { useSeatMap } from '../hooks/useSeatMap';
 import { useSocketStatus } from '../hooks/useSocketStatus';
+import { useCountdown } from '../hooks/useCountdown';
 import { SeatMap } from '../components/SeatMap';
 import './SeatSelectionPage.css';
 
 interface SeatSelectionPageProps {
   flight: FlightDto;
   onBack: () => void;
+  onContinueToPayment: (seat: SeatDto) => void;
 }
 
-function useCountdown(expiresAt: string | undefined): string | null {
-  const [label, setLabel] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!expiresAt) {
-      setLabel(null);
-      return;
-    }
-
-    const target = expiresAt;
-
-    function tick() {
-      const remainingMs = new Date(target).getTime() - Date.now();
-      if (remainingMs <= 0) {
-        setLabel('00:00');
-        return;
-      }
-      const totalSeconds = Math.floor(remainingMs / 1000);
-      const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
-      const seconds = String(totalSeconds % 60).padStart(2, '0');
-      setLabel(`${minutes}:${seconds}`);
-    }
-
-    tick();
-    const interval = setInterval(tick, 1000);
-    return () => clearInterval(interval);
-  }, [expiresAt]);
-
-  return label;
-}
-
-export function SeatSelectionPage({ flight, onBack }: SeatSelectionPageProps) {
+export function SeatSelectionPage({ flight, onBack, onContinueToPayment }: SeatSelectionPageProps) {
   const { seats, loading, error, blockSeat, releaseSeat } = useSeatMap(flight.id);
   const socketStatus = useSocketStatus();
   const [actionError, setActionError] = useState<string | null>(null);
@@ -154,7 +125,7 @@ export function SeatSelectionPage({ flight, onBack }: SeatSelectionPageProps) {
                     type="button"
                     className="seat-summary-cta"
                     disabled={pending}
-                    title="La confirmación de la reserva llega en la siguiente historia"
+                    onClick={() => onContinueToPayment(mySeat)}
                   >
                     Continuar con el pago
                   </button>
