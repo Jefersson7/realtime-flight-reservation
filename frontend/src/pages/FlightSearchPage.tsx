@@ -34,9 +34,10 @@ function searchErrorMessage(error: unknown): string {
 
 interface FlightSearchPageProps {
   onChooseSeats: (flight: FlightDto) => void;
+  onViewDashboard: (flight: FlightDto) => void;
 }
 
-export function FlightSearchPage({ onChooseSeats }: FlightSearchPageProps) {
+export function FlightSearchPage({ onChooseSeats, onViewDashboard }: FlightSearchPageProps) {
   const [flights, setFlights] = useState<FlightDto[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -113,10 +114,6 @@ export function FlightSearchPage({ onChooseSeats }: FlightSearchPageProps) {
     <div className="page">
       <header className="page-header">
         <div className="page-header-inner">
-          <span className="page-eyebrow">
-            <span className="page-live-dot" aria-hidden="true" />
-            Estado en tiempo real
-          </span>
           <h1 className="page-title">Encuentra tu próximo vuelo</h1>
           <p className="page-subtitle">
             Busca por origen, destino y fecha. Los cambios de estado del vuelo se reflejan al instante.
@@ -151,6 +148,7 @@ export function FlightSearchPage({ onChooseSeats }: FlightSearchPageProps) {
             flights={flights}
             onDemoStatusChange={handleDemoStatusChange}
             onChooseSeats={onChooseSeats}
+            onViewDashboard={onViewDashboard}
           />
         )}
       </main>

@@ -74,10 +74,6 @@ export function SeatSelectionPage({ flight, onBack, onContinueToPayment }: SeatS
           <button type="button" className="seat-back-button" onClick={onBack}>
             ← Volver a la búsqueda
           </button>
-          <span className="page-eyebrow">
-            <span className="page-live-dot" aria-hidden="true" />
-            Estado en tiempo real
-          </span>
           <h1 className="page-title">
             {flight.origin} → {flight.destination}
           </h1>

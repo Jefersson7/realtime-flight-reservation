@@ -31,11 +31,12 @@ interface FlightListProps {
   flights: FlightDto[];
   onDemoStatusChange?: (flight: FlightDto) => void;
   onChooseSeats?: (flight: FlightDto) => void;
+  onViewDashboard?: (flight: FlightDto) => void;
 }
 
 const UNAVAILABLE_STATUSES: FlightStatus[] = [FlightStatus.CANCELLED, FlightStatus.SOLD_OUT];
 
-export function FlightList({ flights, onDemoStatusChange, onChooseSeats }: FlightListProps) {
+export function FlightList({ flights, onDemoStatusChange, onChooseSeats, onViewDashboard }: FlightListProps) {
   const [selectedFlightId, setSelectedFlightId] = useState<string | null>(null);
 
   if (flights.length === 0) {
@@ -121,7 +122,7 @@ export function FlightList({ flights, onDemoStatusChange, onChooseSeats }: Fligh
                 </div>
               </div>
 
-              {isSelected && (onDemoStatusChange || onChooseSeats) && (
+              {isSelected && (onDemoStatusChange || onChooseSeats || onViewDashboard) && (
                 <div className="flight-card-footer">
                   <span className="flight-card-footer-label">Vuelo seleccionado</span>
                   {onChooseSeats && (
@@ -139,6 +140,18 @@ export function FlightList({ flights, onDemoStatusChange, onChooseSeats }: Fligh
                       }
                     >
                       Elegir asientos →
+                    </button>
+                  )}
+                  {onViewDashboard && (
+                    <button
+                      className="flight-dashboard-button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        onViewDashboard(flight);
+                      }}
+                      title="Ver métricas de ocupación del vuelo en tiempo real"
+                    >
+                      Estado del vuelo 📊
                     </button>
                   )}
                   {onDemoStatusChange && (

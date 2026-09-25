@@ -69,10 +69,6 @@ export function CheckoutPage({ flight, seat, onBack, onConfirmed }: CheckoutPage
           <button type="button" className="seat-back-button" onClick={onBack}>
             ← Volver a la selección de asientos
           </button>
-          <span className="page-eyebrow">
-            <span className="page-live-dot" aria-hidden="true" />
-            Estado en tiempo real
-          </span>
           <h1 className="page-title">Confirma tu pago</h1>
           <p className="page-subtitle">
             {flight.origin} → {flight.destination} · {flight.airline} {flight.flightNumber}
