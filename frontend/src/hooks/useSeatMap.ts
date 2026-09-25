@@ -5,6 +5,7 @@ import {
   SEAT_EVENTS,
   SeatBlockAck,
   SeatBlockedPayload,
+  SeatOccupiedPayload,
   SeatReleaseAck,
   SeatReleasedPayload,
 } from '@shared/events';
@@ -44,6 +45,18 @@ export function useSeatMap(flightId: string) {
     );
   }, []);
 
+  // Permanent: unlike BLOCKED, an OCCUPIED seat never gets a release timer —
+  // the booking confirmation is final.
+  const applyOccupied = useCallback((payload: SeatOccupiedPayload) => {
+    setSeats((prev) =>
+      prev.map((seat) =>
+        seat.id === payload.seatId
+          ? { ...seat, status: SeatStatus.OCCUPIED, blockedBy: undefined, blockExpiresAt: undefined }
+          : seat,
+      ),
+    );
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -63,14 +76,16 @@ export function useSeatMap(flightId: string) {
     socket.emit(SEAT_EVENTS.JOIN_FLIGHT, { flightId });
     socket.on(SEAT_EVENTS.BLOCKED, applyBlock);
     socket.on(SEAT_EVENTS.RELEASED, applyRelease);
+    socket.on(SEAT_EVENTS.OCCUPIED, applyOccupied);
 
     return () => {
       cancelled = true;
       socket.emit(SEAT_EVENTS.LEAVE_FLIGHT, { flightId });
       socket.off(SEAT_EVENTS.BLOCKED, applyBlock);
       socket.off(SEAT_EVENTS.RELEASED, applyRelease);
+      socket.off(SEAT_EVENTS.OCCUPIED, applyOccupied);
     };
-  }, [flightId, applyBlock, applyRelease]);
+  }, [flightId, applyBlock, applyRelease, applyOccupied]);
 
   // After a socket reconnect the client may have missed BLOCKED/RELEASED
   // events while down, and the server-side reservation (owned by our stable

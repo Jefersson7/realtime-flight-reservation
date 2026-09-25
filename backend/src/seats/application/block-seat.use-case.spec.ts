@@ -32,6 +32,7 @@ describe('BlockSeatUseCase', () => {
       notifyFlightStatusChanged: jest.fn(),
       notifySeatBlocked: jest.fn(),
       notifySeatReleased: jest.fn(),
+      notifySeatOccupied: jest.fn(),
     };
     useCase = new BlockSeatUseCase(seatRepository, seatLock, notifier);
   });

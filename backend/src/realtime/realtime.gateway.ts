@@ -14,6 +14,7 @@ import {
   SEAT_EVENTS,
   SeatBlockedPayload,
   SeatBlockRequest,
+  SeatOccupiedPayload,
   SeatReleasedPayload,
   SeatReleaseRequest,
 } from '@shared/events';
@@ -56,6 +57,14 @@ export class RealtimeGateway implements RealtimeNotifierPort {
 
   notifySeatReleased(payload: SeatReleasedPayload): void {
     this.server.to(flightRoom(payload.flightId)).emit(SEAT_EVENTS.RELEASED, payload);
+  }
+
+  // The seat is now permanently OCCUPIED (booking confirmed): cancel any
+  // pending auto-release timer so it doesn't fire later and try to free a
+  // seat that no longer has a temporary lock at all.
+  notifySeatOccupied(payload: SeatOccupiedPayload): void {
+    this.cancelAutoRelease(payload.seatId);
+    this.server.to(flightRoom(payload.flightId)).emit(SEAT_EVENTS.OCCUPIED, payload);
   }
 
   @SubscribeMessage(SEAT_EVENTS.JOIN_FLIGHT)

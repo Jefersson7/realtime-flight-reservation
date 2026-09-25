@@ -9,6 +9,7 @@ export const SEAT_EVENTS = {
   RELEASE: 'seat:release',
   BLOCKED: 'seat:blocked',
   RELEASED: 'seat:released',
+  OCCUPIED: 'seat:occupied',
 } as const;
 
 export interface JoinFlightPayload {
@@ -42,6 +43,15 @@ export interface SeatBlockedPayload {
 export interface SeatReleasedPayload {
   flightId: string;
   seatId: string;
+}
+
+// Broadcast once a booking is confirmed: the seat becomes OCCUPIED
+// permanently (no TTL, no auto-release), so every client must disable
+// selection for it for good.
+export interface SeatOccupiedPayload {
+  flightId: string;
+  seatId: string;
+  pnr: string;
 }
 
 // Ack shape returned to the caller of `seat:block` via the Socket.io

@@ -13,6 +13,7 @@ describe('ReleaseSeatUseCase', () => {
       notifyFlightStatusChanged: jest.fn(),
       notifySeatBlocked: jest.fn(),
       notifySeatReleased: jest.fn(),
+      notifySeatOccupied: jest.fn(),
     };
     useCase = new ReleaseSeatUseCase(seatLock, notifier);
   });

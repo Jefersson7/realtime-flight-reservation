@@ -6,6 +6,7 @@ import redisConfig from './config/redis.config';
 import { FlightsModule } from './flights/flights.module';
 import { RealtimeModule } from './realtime/realtime.module';
 import { SeatsModule } from './seats/seats.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { SeatsModule } from './seats/seats.module';
     RealtimeModule,
     FlightsModule,
     SeatsModule,
+    BookingsModule,
   ],
 })
 export class AppModule {}
