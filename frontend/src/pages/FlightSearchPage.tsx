@@ -32,7 +32,11 @@ function searchErrorMessage(error: unknown): string {
   return 'No se pudo buscar vuelos. Intenta de nuevo en unos segundos.';
 }
 
-export function FlightSearchPage() {
+interface FlightSearchPageProps {
+  onChooseSeats: (flight: FlightDto) => void;
+}
+
+export function FlightSearchPage({ onChooseSeats }: FlightSearchPageProps) {
   const [flights, setFlights] = useState<FlightDto[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -143,7 +147,11 @@ export function FlightSearchPage() {
         )}
 
         {!loading && hasSearched && (
-          <FlightList flights={flights} onDemoStatusChange={handleDemoStatusChange} />
+          <FlightList
+            flights={flights}
+            onDemoStatusChange={handleDemoStatusChange}
+            onChooseSeats={onChooseSeats}
+          />
         )}
       </main>
     </div>

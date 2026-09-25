@@ -2,37 +2,7 @@
 
 ## 1. Diagrama de arquitectura
 
-```mermaid
-flowchart LR
-    subgraph Cliente
-        UI[React + TypeScript]
-    end
-
-    subgraph Backend[NestJS - Monolito Modular]
-        GW[RealtimeGateway<br/>Socket.io]
-        FLIGHTS[FlightsModule]
-        SEATS[SeatsModule<br/>domain / application / ports / infrastructure]
-        BOOKINGS[BookingsModule<br/>domain / application / ports / infrastructure]
-    end
-
-    PG[(PostgreSQL)]
-    REDIS[(Redis<br/>SET NX EX)]
-
-    UI -- HTTP REST --> FLIGHTS
-    UI -- HTTP REST --> SEATS
-    UI -- HTTP REST --> BOOKINGS
-    UI <-- WebSocket --> GW
-
-    FLIGHTS --> PG
-    SEATS --> PG
-    SEATS --> REDIS
-    BOOKINGS --> PG
-    BOOKINGS --> REDIS
-
-    SEATS -. emite eventos vía RealtimeNotifierPort .-> GW
-    BOOKINGS -. emite eventos vía RealtimeNotifierPort .-> GW
-    FLIGHTS -. emite eventos vía RealtimeNotifierPort .-> GW
-```
+![Diagrama de arquitectura](../assets/mermaid-diagram-2026-09-24-185751.png)
 
 ## 2. Justificación de la arquitectura
 
@@ -67,9 +37,13 @@ Los casos de uso (`application/`) orquestan las reglas de dominio contra esos po
 
 ## 3. Manejo de concurrencia y estado en tiempo real
 
-**Bloqueo de asientos**: se usa el comando atómico de Redis `SET seat:block:<seatId> <valor> EX 600 NX`. `NX` garantiza que solo se escribe la key si no existe — si dos usuarios intentan bloquear el mismo asiento al mismo tiempo, solo uno obtiene un resultado distinto de `null`; el otro recibe `ConflictException`. El TTL de 600 segundos (10 minutos) libera automáticamente el bloqueo si el usuario no completa la compra.
+**Bloqueo de asientos**: se usa el comando atómico de Redis `SET seat:block:<seatId> <clientId> EX 600 NX`. `NX` garantiza que solo se escribe la key si no existe — si dos usuarios intentan bloquear el mismo asiento al mismo tiempo, solo uno obtiene un resultado distinto de `null`; el otro recibe `ConflictException`. El value del lock es el **`clientId` estable** del cliente (token persistido en `sessionStorage`), no el id del socket: el socket id cambia en cada reconexión, pero la reserva no debe perderse por un parpadeo de red. El TTL de 600 segundos (10 minutos) es el límite real de la reserva si el usuario no completa la compra.
 
-**Liberación por desconexión**: si el socket se desconecta con un asiento bloqueado, `handleDisconnect` en el Gateway libera la key correspondiente en Redis y notifica a todos los clientes (`SEAT_RELEASED`).
+**La reserva sobrevive a la desconexión (y la recupera el mismo usuario)**: el lock vive en Redis bajo el `clientId` del usuario, así que una desconexión/reconexión (nueva conexión de Socket.io con id distinto) no libera el asiento. Al reconectar, el cliente re-emite el `JOIN_FLIGHT` y re-fetch del mapa para recuperar los eventos perdidos y el `expiresAt` restante real (calculado del TTL que aún queda en Redis). El asiento se muestra "bloqueado por mí" mientras el `clientId` del usuario coincida con el dueño del lock. Un `sessionStorage` por pestaña evita que dos pestañas del mismo navegador compartan (y se roben) reservas.
+
+**Liberación por expiración (no por desconexión)**: cuando el TTL de Redis vence no hay escritura a BD que despierte un listener, así que la liberación se conduce desde el Gateway: al bloquear se programa un timer in-process con el mismo TTL (`SEAT_LOCK_TTL_SECONDS`) que, al dispararse, ejecuta la liberación (compare-and-delete) y difunde `SEAT_RELEASED` a toda la room — el asiento se **disponibiliza y el countdown desaparece** al instante para todos los clientes. El frontend tiene además una red de seguridad local: al llegar el `blockExpiresAt` a cero libera el asiento en su propia vista aunque el broadcast se haya perdido. Al liberar manualmente el asiento o cambiarlo, se cancela el timer pendiente. Se descartó usar **keyspace notifications de Redis** (`--notify-keyspace-events Ex`) porque exigen configuración extra del servidor Redis y no aportan robustez adicional relevante para una arquitectura de instancia única. **Limitación documentada**: el timer es in-process (arquitectura de instancia única, ADR-002); si el backend se reinicia, los timers se pierden pero el TTL de Redis sigue reteniendo el lock — al expirar sin broadcast, el cliente propietario se auto-libera por su red de seguridad local y el resto de clientes se corrige al reconectar (resync) o recargar.
+
+**Cambio de asiento atómico (block-first, release-after)**: para mover la reserva a otro asiento el frontend **bloquea el nuevo primero** y solo después libera el anterior (`handleSeatClick` en `SeatSelectionPage`). Si el bloqueo del nuevo falla (otro usuario se adelantó), el usuario conserva su reserva actual: nunca se queda sin asiento. El orden original (liberar primero y luego bloquear) dejaba una ventana en la que otro cliente podía ganar el asiento recién liberado, dejando al usuario sin ninguno. Se descartó un comando Redis atómico de *switch* (script Lua) por considerarse sobreingeniería para el alcance de la prueba: cada paso individual ya es atómico (`SET NX` y el script compare-and-delete) y el invariante importante —nunca terminar con cero asientos— se garantiza con el orden.
 
 **Confirmación de reserva**: al confirmar, se verifica primero que el socket que confirma es el mismo que posee el bloqueo vigente en Redis (evita que otro cliente confirme un asiento bloqueado por alguien más). Luego se ejecuta una **transacción de PostgreSQL** (vía TypeORM) que crea el `Booking` y actualiza el `Seat` a `OCCUPIED` de forma atómica. Al terminar, se borra la key de Redis y se emite `SEAT_OCCUPIED` a todos los clientes conectados al vuelo.
 

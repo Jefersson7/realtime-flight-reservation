@@ -26,7 +26,11 @@ describe('UpdateFlightStatusUseCase', () => {
 
   beforeEach(() => {
     repository = { findById: jest.fn(), save: jest.fn() };
-    notifier = { notifyFlightStatusChanged: jest.fn() };
+    notifier = {
+      notifyFlightStatusChanged: jest.fn(),
+      notifySeatBlocked: jest.fn(),
+      notifySeatReleased: jest.fn(),
+    };
     useCase = new UpdateFlightStatusUseCase(repository, notifier);
   });
 
