@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { FlightDto, SeatDto } from '@shared/dto';
 import { SeatStatus } from '@shared/enums';
-import { socket } from '../lib/socket';
+import { getClientId } from '../lib/clientIdentity';
 import { useSeatMap } from '../hooks/useSeatMap';
 import { useSocketStatus } from '../hooks/useSocketStatus';
 import { SeatMap } from '../components/SeatMap';
@@ -49,7 +49,9 @@ export function SeatSelectionPage({ flight, onBack }: SeatSelectionPageProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
-  const myClientId = socketStatus === 'connected' ? socket.id ?? null : null;
+  // Stable per-tab token that owns the lock (survives reconnects) — never
+  // the socket id, which changes on every reconnection.
+  const myClientId = getClientId();
 
   const mySeat = useMemo(
     () => seats.find((seat) => seat.status === SeatStatus.BLOCKED && seat.blockedBy === myClientId),
@@ -65,17 +67,27 @@ export function SeatSelectionPage({ flight, onBack }: SeatSelectionPageProps) {
 
     try {
       if (seat.status === SeatStatus.BLOCKED && seat.blockedBy === myClientId) {
-        await releaseSeat(seat.id);
+        const ack = await releaseSeat(seat.id);
+        if (!ack.ok) setActionError(ack.message ?? 'No se pudo liberar el asiento.');
+        return;
+      }
+
+      // Block the new seat FIRST and only release the current one after the
+      // new block succeeded: if blocking fails (e.g. another user raced in),
+      // we keep our existing reservation instead of losing it.
+      const ack = await blockSeat(seat.id);
+      if (!ack.ok) {
+        setActionError(ack.message);
         return;
       }
 
       if (mySeat && mySeat.id !== seat.id) {
-        await releaseSeat(mySeat.id);
-      }
-
-      const ack = await blockSeat(seat.id);
-      if (!ack.ok) {
-        setActionError(ack.message);
+        const releaseAck = await releaseSeat(mySeat.id);
+        if (!releaseAck.ok) {
+          setActionError(
+            releaseAck.message ?? 'No se pudo liberar el asiento anterior; se liberará automáticamente.',
+          );
+        }
       }
     } finally {
       setPending(false);

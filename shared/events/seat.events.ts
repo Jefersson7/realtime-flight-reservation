@@ -15,14 +15,19 @@ export interface JoinFlightPayload {
   flightId: string;
 }
 
+// `clientId` is the stable per-tab identity (from sessionStorage) that owns
+// the lock, NOT the socket id — the socket id changes on every reconnect,
+// while the reservation must survive reconnects (see architecture.md §3).
 export interface SeatBlockRequest {
   flightId: string;
   seatId: string;
+  clientId: string;
 }
 
 export interface SeatReleaseRequest {
   flightId: string;
   seatId: string;
+  clientId: string;
 }
 
 // Broadcast to everyone in `flight:{flightId}` (including the client that
@@ -47,4 +52,5 @@ export type SeatBlockAck =
 
 export interface SeatReleaseAck {
   ok: boolean;
+  message?: string;
 }
